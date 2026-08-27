@@ -1,0 +1,3 @@
+.ai-row{display:flex;align-items:center;gap:12px;justify-content:space-between;margin:0 0 10px;padding:10px 12px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(255,255,255,.025)}
+.ai-toggle{display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer;white-space:nowrap}.ai-toggle input{accent-color:#c7aa64;width:16px;height:16px}.ai-row small{color:var(--muted);line-height:1.4;text-align:right}.ai-row.busy{border-color:rgba(199,170,100,.35)}
+@media(max-width:760px){.ai-row{align-items:flex-start;flex-direction:column}.ai-row small{text-align:left}}
