@@ -21,8 +21,8 @@
     const dataCode = await loadFiles(['data.00.b64','data.01.b64']);
     (0, eval)(dataCode);
     const gameCode = await loadFiles([
-      'game.00.b64','game.01a.b64','game.01b.b64','game.02a.b64','game.02b.b64',
-      'game.03a.b64','game.03b.b64','game.04a.b64','game.04b.b64','game.05a.b64','game.05b.b64'
+      'game.v26x.00.b64','game.v26x.01.b64','game.v26x.02.b64','game.v26x.03.b64',
+      'game.v26x.04.b64','game.v26x.05.b64','game.v26x.06.b64'
     ]);
     (0, eval)(gameCode);
   } catch (err) {
