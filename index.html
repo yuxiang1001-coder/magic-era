@@ -10,129 +10,38 @@
 <body>
   <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
   <header class="topbar">
-    <div class="brand">
-      <div class="sigil" aria-hidden="true">✦</div>
-      <div>
-        <strong>魔法纪元</strong>
-        <span>WORLD SIMULATION · V2</span>
-      </div>
-    </div>
+    <div class="brand"><div class="sigil" aria-hidden="true">✦</div><div><strong>魔法纪元</strong><span>WORLD SIMULATION · V2</span></div></div>
     <nav class="top-actions">
-      <button class="ghost" id="btnCanon">正典层级</button>
-      <button class="ghost" id="btnSave">存档</button>
-      <button class="ghost" id="btnExport">导出</button>
-      <button class="ghost" id="btnImport">导入</button>
-      <input id="fileImport" type="file" accept="application/json" hidden />
+      <button class="ghost" id="btnCanon">正典层级</button><button class="ghost" id="btnSave">存档</button><button class="ghost" id="btnExport">导出</button><button class="ghost" id="btnImport">导入</button><input id="fileImport" type="file" accept="application/json" hidden />
     </nav>
   </header>
-
   <main id="app">
-    <section id="screenLanding" class="screen active landing">
-      <div class="hero-card">
-        <p class="eyebrow">非官方同人 · 纯前端世界模拟原型</p>
-        <h1>《哈利·波特·魔法纪元》</h1>
-        <p class="subtitle">魔法世界沙盘 · 超高自由度人生模拟器</p>
-        <div class="rule-line">原著优先级别已启用</div>
-        <p class="hero-copy">你不是“大难不死的男孩”。世界不会等待你。教授会老去，部长会更替，家庭会争吵，商店会涨价，战争会留下伤痕。你只是出生在这个世界里的一个人。</p>
-        <div class="hero-grid">
-          <div><b>正典</b><span>小说事实锁定，扩展内容分层</span></div>
-          <div><b>未知</b><span>角色只能知道自己合理获得的信息</span></div>
-          <div><b>时间</b><span>世界每月自行演化</span></div>
-          <div><b>自由</b><span>推荐行动 + 自由输入</span></div>
-        </div>
-        <div class="hero-cta"><button id="btnBegin" class="primary large">创建我的人生</button><button id="btnContinue" class="secondary large">继续本地存档</button></div>
-      </div>
-    </section>
-
+    <section id="screenLanding" class="screen active landing"><div class="hero-card">
+      <p class="eyebrow">非官方同人 · 纯前端世界模拟游戏</p><h1>《哈利·波特·魔法纪元》</h1><p class="subtitle">魔法世界沙盘 · 超高自由度人生模拟器</p>
+      <div class="rule-line">原著优先级别已启用</div><p class="hero-copy">你不是“大难不死的男孩”。世界不会等待你。教授会老去，部长会更替，家庭会争吵，商店会涨价，战争会留下伤痕。你只是出生在这个世界里的一个人。</p>
+      <div class="hero-grid"><div><b>正典</b><span>小说事实锁定，扩展内容分层</span></div><div><b>未知</b><span>角色只能知道自己合理获得的信息</span></div><div><b>时间</b><span>世界每月自行演化</span></div><div><b>自由</b><span>推荐行动 + 自由输入</span></div></div>
+      <div class="hero-cta"><button id="btnBegin" class="primary large">创建我的人生</button><button id="btnContinue" class="secondary large">继续本地存档</button></div>
+    </div></section>
     <section id="screenCreate" class="screen creator">
-      <div class="section-heading">
-        <p class="eyebrow">CHARACTER CREATION</p>
-        <h2>选择你的起点</h2>
-        <p>角色创建阶段只决定起点，不锁死职业、道德或结局。</p>
-      </div>
+      <div class="section-heading"><p class="eyebrow">CHARACTER CREATION</p><h2>选择你的起点</h2><p>角色创建阶段只决定起点，不锁死职业、道德或结局。</p></div>
       <form id="createForm" class="form-grid">
-        <label>时代<select id="era"></select></label>
-        <label>起始年份<input id="startYear" type="number" min="900" max="2050" /></label>
-        <label>姓名<input id="name" placeholder="输入姓名" required /></label>
-        <label>年龄<input id="age" type="number" min="0" max="90" value="11" required /></label>
-        <label>性别<input id="gender" placeholder="自定义" /></label>
-        <label>出生/居住地<select id="location"></select></label>
-        <label>血统/出身<select id="blood"></select></label>
-        <label>身体/魔法状态<select id="condition"></select></label>
-        <label>家庭<select id="birth"></select></label>
-        <label>魔法资质<select id="aptitude"></select></label>
-        <label>特殊天赋<select id="special"></select></label>
+        <label>时代<select id="era"></select></label><label>起始年份<input id="startYear" type="number" min="900" max="2050" /></label><label>姓名<input id="name" placeholder="输入姓名" required /></label><label>年龄<input id="age" type="number" min="0" max="90" value="11" required /></label><label>性别<input id="gender" placeholder="自定义" /></label><label>出生/居住地<select id="location"></select></label><label>血统/出身<select id="blood"></select></label><label>身体/魔法状态<select id="condition"></select></label><label>家庭<select id="birth"></select></label><label>魔法资质<select id="aptitude"></select></label><label>特殊天赋<select id="special"></select></label>
         <label>学院倾向<select id="house"><option value="auto">系统判定</option><option value="gryffindor">格兰芬多</option><option value="slytherin">斯莱特林</option><option value="ravenclaw">拉文克劳</option><option value="hufflepuff">赫奇帕奇</option><option value="none">未入学/成年/其他学校</option></select></label>
-        <label>初始政治倾向<select id="politics"></select></label>
-        <label>模拟风格<select id="simStyle"></select></label>
-        <label class="span-2">性格关键词<input id="traits" placeholder="例如：冷静、好奇、重感情" value="好奇、谨慎、独立" /></label>
-        <label class="span-2">初始人生目标<input id="goal" placeholder="一句话目标" value="在魔法世界里找到真正适合自己的生活" /></label>
-        <div class="creator-note span-2" id="creatorNote"></div>
-        <button class="primary span-2" type="submit">进入这个世界</button>
+        <label>初始政治倾向<select id="politics"></select></label><label>模拟风格<select id="simStyle"></select></label><label class="span-2">性格关键词<input id="traits" placeholder="例如：冷静、好奇、重感情" value="好奇、谨慎、独立" /></label><label class="span-2">初始人生目标<input id="goal" placeholder="一句话目标" value="在魔法世界里找到真正适合自己的生活" /></label><div class="creator-note span-2" id="creatorNote"></div><button class="primary span-2" type="submit">进入这个世界</button>
       </form>
     </section>
-
     <section id="screenGame" class="screen game-shell">
-      <aside class="sidebar">
-        <div class="panel portrait-panel">
-          <div class="avatar" id="avatar">✦</div>
-          <div><h3 id="pName">—</h3><p id="pIdentity">—</p></div>
-        </div>
-        <div class="panel stats" id="statsPanel"></div>
-        <div class="panel">
-          <h4>当前目标</h4>
-          <p id="pGoal" class="muted"></p>
-        </div>
-        <div class="panel">
-          <h4>关系摘要</h4>
-          <div id="relationsMini" class="mini-list"></div>
-        </div>
-      </aside>
-
+      <aside class="sidebar"><div class="panel portrait-panel"><div class="avatar" id="avatar">✦</div><div><h3 id="pName">—</h3><p id="pIdentity">—</p></div></div><div class="panel stats" id="statsPanel"></div><div class="panel"><h4>当前目标</h4><p id="pGoal" class="muted"></p></div><div class="panel"><h4>关系摘要</h4><div id="relationsMini" class="mini-list"></div></div></aside>
       <div class="main-column">
-        <div class="worldbar">
-          <div><span>时间</span><strong id="worldTime">—</strong></div>
-          <div><span>地点</span><strong id="worldLocation">—</strong></div>
-          <div><span>世界压力</span><strong id="worldPressure">—</strong></div>
-          <div><span>历史偏离</span><strong id="deviation">稳定</strong></div>
-        </div>
-
-        <section class="panel story-panel">
-          <div class="panel-title"><span>本月世界</span><small id="turnCounter">第 0 轮</small></div>
-          <div id="storyFeed" class="story-feed"></div>
-        </section>
-
-        <section class="panel action-panel">
-          <div class="panel-title"><span>你要做什么？</span><small>系统不会替你决定人生</small></div>
-          <div class="quick-actions" id="quickActions"></div>
-          <textarea id="freeAction" rows="3" placeholder="自由输入，例如：我去图书馆查阅有关蛇怪的资料，但不告诉任何人。"></textarea>
-          <div class="action-footer">
-            <button id="btnAct" class="primary">执行行动</button>
-            <button id="btnAdvance" class="secondary">结束本月</button>
-          </div>
-        </section>
-
-        <section class="panel tabs-panel">
-          <div class="tabs">
-            <button class="tab active" data-tab="knowledge">我知道的事</button>
-            <button class="tab" data-tab="school">学业/职业</button>
-            <button class="tab" data-tab="relations">人物关系</button>
-            <button class="tab" data-tab="world">世界状态</button>
-            <button class="tab" data-tab="family">家庭/传承</button>
-            <button class="tab" data-tab="assets">资产/势力</button>
-            <button class="tab" data-tab="history">人生记录</button>
-          </div>
-          <div id="tabContent" class="tab-content"></div>
-        </section>
+        <div class="worldbar"><div><span>时间</span><strong id="worldTime">—</strong></div><div><span>地点</span><strong id="worldLocation">—</strong></div><div><span>世界压力</span><strong id="worldPressure">—</strong></div><div><span>历史偏离</span><strong id="deviation">稳定</strong></div></div>
+        <section class="panel story-panel"><div class="panel-title"><span>本月世界</span><small id="turnCounter">第 0 轮</small></div><div id="storyFeed" class="story-feed"></div></section>
+        <section class="panel action-panel"><div class="panel-title"><span>你要做什么？</span><small>系统不会替你决定人生</small></div><div class="quick-actions" id="quickActions"></div><textarea id="freeAction" rows="3" placeholder="自由输入，例如：我去图书馆查阅有关蛇怪的资料，但不告诉任何人。"></textarea><div class="action-footer"><button id="btnAct" class="primary">执行行动</button><button id="btnAdvance" class="secondary">结束本月</button></div></section>
+        <section class="panel tabs-panel"><div class="tabs"><button class="tab active" data-tab="knowledge">我知道的事</button><button class="tab" data-tab="school">学业/职业</button><button class="tab" data-tab="relations">人物关系</button><button class="tab" data-tab="world">世界状态</button><button class="tab" data-tab="family">家庭/传承</button><button class="tab" data-tab="assets">资产/势力</button><button class="tab" data-tab="history">人生记录</button></div><div id="tabContent" class="tab-content"></div></section>
       </div>
     </section>
   </main>
   <footer class="site-footer">非官方同人互动模拟 · 不代表版权方或作者立场 · 本站不提供任何付费内容</footer>
-
-  <dialog id="modal"><div id="modalContent"></div><button id="modalClose" class="secondary">关闭</button></dialog>
-  <div id="toast" role="status"></div>
-
-  <script src="data.js"></script>
-  <script src="game.js"></script>
+  <dialog id="modal"><div id="modalContent"></div><button id="modalClose" class="secondary">关闭</button></dialog><div id="toast" role="status"></div>
+  <script src="loader.js"></script>
 </body>
 </html>
