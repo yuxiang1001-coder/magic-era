@@ -6,17 +6,13 @@
   <meta name="theme-color" content="#11130f" />
   <title>哈利·波特·魔法纪元｜世界模拟系统 V2</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ai.css" />
 </head>
 <body>
   <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
   <header class="topbar">
-    <div class="brand">
-      <div class="sigil" aria-hidden="true">✦</div>
-      <div><strong>魔法纪元</strong><span>WORLD SIMULATION · V2.6</span></div>
-    </div>
-    <nav class="top-actions">
-      <button class="ghost" id="btnCanon">正典层级</button><button class="ghost" id="btnSave">存档</button><button class="ghost" id="btnExport">导出</button><button class="ghost" id="btnImport">导入</button><input id="fileImport" type="file" accept="application/json" hidden />
-    </nav>
+    <div class="brand"><div class="sigil" aria-hidden="true">✦</div><div><strong>魔法纪元</strong><span>WORLD SIMULATION · V2.6</span></div></div>
+    <nav class="top-actions"><button class="ghost" id="btnCanon">正典层级</button><button class="ghost" id="btnSave">存档</button><button class="ghost" id="btnExport">导出</button><button class="ghost" id="btnImport">导入</button><input id="fileImport" type="file" accept="application/json" hidden /></nav>
   </header>
   <main id="app">
     <section id="screenLanding" class="screen active landing"><div class="hero-card">
@@ -25,8 +21,7 @@
       <div class="hero-grid"><div><b>正典</b><span>小说事实锁定，扩展内容分层</span></div><div><b>未知</b><span>角色只能知道自己合理获得的信息</span></div><div><b>时间</b><span>世界每月自行演化</span></div><div><b>AI自由行动</b><span>理解开放指令，规则系统负责最终裁定</span></div></div>
       <div class="hero-cta"><button id="btnBegin" class="primary large">创建我的人生</button><button id="btnContinue" class="secondary large">继续本地存档</button></div>
     </div></section>
-    <section id="screenCreate" class="screen creator">
-      <div class="section-heading"><p class="eyebrow">CHARACTER CREATION</p><h2>选择你的起点</h2><p>角色创建阶段只决定起点，不锁死职业、道德或结局。</p></div>
+    <section id="screenCreate" class="screen creator"><div class="section-heading"><p class="eyebrow">CHARACTER CREATION</p><h2>选择你的起点</h2><p>角色创建阶段只决定起点，不锁死职业、道德或结局。</p></div>
       <form id="createForm" class="form-grid">
         <label>时代<select id="era"></select></label><label>起始年份<input id="startYear" type="number" min="900" max="2050" /></label><label>姓名<input id="name" placeholder="输入姓名" required /></label><label>年龄<input id="age" type="number" min="0" max="90" value="11" required /></label><label>性别<input id="gender" placeholder="自定义" /></label><label>出生/居住地<select id="location"></select></label><label>血统/出身<select id="blood"></select></label><label>身体/魔法状态<select id="condition"></select></label><label>家庭<select id="birth"></select></label><label>魔法资质<select id="aptitude"></select></label><label>特殊天赋<select id="special"></select></label>
         <label>学院倾向<select id="house"><option value="auto">系统判定</option><option value="gryffindor">格兰芬多</option><option value="slytherin">斯莱特林</option><option value="ravenclaw">拉文克劳</option><option value="hufflepuff">赫奇帕奇</option><option value="none">未入学/其他学校</option></select></label>
