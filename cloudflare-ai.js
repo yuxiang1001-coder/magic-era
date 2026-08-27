@@ -2,26 +2,28 @@
   'use strict';
 
   const ENDPOINT = 'https://magic-era-ai.yuxiang10010522.workers.dev';
+  const REQUEST_TIMEOUT_MS = 55000;
   let bypass = false;
   let busy = false;
 
   const $ = (id) => document.getElementById(id);
   const clean = (v, max = 1400) => String(v || '').trim().slice(0, max);
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   function getContext() {
     const story = $('storyFeed');
     const recent = story
-      ? Array.from(story.children).slice(-5).map((el) => clean(el.textContent, 700)).filter(Boolean)
+      ? Array.from(story.children).slice(-4).map((el) => clean(el.textContent, 520)).filter(Boolean)
       : [];
 
     return {
       time: clean($('worldTime')?.textContent, 120),
       location: clean($('worldLocation')?.textContent, 160),
-      identity: clean($('pIdentity')?.textContent, 240),
-      goal: clean($('pGoal')?.textContent, 300),
-      stats: clean($('statsPanel')?.textContent, 1000),
-      relationships: clean($('relationsMini')?.textContent, 700),
-      worldPressure: clean($('worldPressure')?.textContent, 120),
+      identity: clean($('pIdentity')?.textContent, 220),
+      goal: clean($('pGoal')?.textContent, 240),
+      stats: clean($('statsPanel')?.textContent, 720),
+      relationships: clean($('relationsMini')?.textContent, 520),
+      worldPressure: clean($('worldPressure')?.textContent, 100),
       recentEvents: recent
     };
   }
@@ -33,13 +35,13 @@
     el.dataset.state = state;
   }
 
-  function toast(text) {
+  function toast(text, duration = 5200) {
     const el = $('toast');
     if (!el) return;
     el.textContent = text;
     el.classList.add('show');
     clearTimeout(toast._t);
-    toast._t = setTimeout(() => el.classList.remove('show'), 3200);
+    toast._t = setTimeout(() => el.classList.remove('show'), duration);
   }
 
   function parseMaybeJson(value) {
@@ -55,7 +57,6 @@
 
     let text = value.trim();
     text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
-
     try { return JSON.parse(text); } catch {}
 
     const first = text.indexOf('{');
@@ -63,39 +64,31 @@
     if (first >= 0 && last > first) {
       try { return JSON.parse(text.slice(first, last + 1)); } catch {}
     }
-
     return text;
   }
 
   function normalizeResult(payload) {
     let result = payload?.result ?? payload;
 
-    // Workers AI 的不同模型可能返回 {response:{...}}，也可能返回
-    // OpenAI 兼容格式 {choices:[{message:{content:"..."}}]}。
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 7; i++) {
       if (result == null) break;
-
       if (result && typeof result === 'object' && Array.isArray(result.choices) && result.choices.length) {
         const message = result.choices[0]?.message || {};
         result = message.parsed ?? message.content ?? result.choices[0]?.text ?? result;
         continue;
       }
-
       if (result && typeof result === 'object' && result.response !== undefined) {
         result = result.response;
         continue;
       }
-
       if (result && typeof result === 'object' && result.result?.response !== undefined) {
         result = result.result.response;
         continue;
       }
-
       if (result && typeof result === 'object' && result.output_text !== undefined) {
         result = result.output_text;
         continue;
       }
-
       const parsed = parseMaybeJson(result);
       if (parsed !== result) {
         result = parsed;
@@ -105,7 +98,6 @@
     }
 
     result = parseMaybeJson(result);
-
     if (result && typeof result === 'object' && !Array.isArray(result)) return result;
 
     const text = clean(result, 1800);
@@ -118,9 +110,9 @@
     };
   }
 
-  async function askAI(action) {
+  async function askOnce(action) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 18000);
+    const timer = setTimeout(() => controller.abort('AI request timeout'), REQUEST_TIMEOUT_MS);
     try {
       const response = await fetch(ENDPOINT, {
         method: 'POST',
@@ -128,13 +120,49 @@
         body: JSON.stringify({ action, context: getContext() }),
         signal: controller.signal
       });
-      const payload = await response.json().catch(() => null);
+
+      const raw = await response.text();
+      let payload = null;
+      try { payload = raw ? JSON.parse(raw) : null; } catch {}
+
       if (!response.ok || !payload?.ok) {
-        throw new Error(payload?.message || payload?.error || `HTTP ${response.status}`);
+        const detail = payload?.message || payload?.error || clean(raw, 260) || `HTTP ${response.status}`;
+        const err = new Error(`HTTP ${response.status}: ${detail}`);
+        err.status = response.status;
+        throw err;
       }
       return normalizeResult(payload);
+    } catch (error) {
+      if (error?.name === 'AbortError' || String(error).includes('AI request timeout')) {
+        throw new Error('请求超过55秒，Cloudflare AI 响应超时');
+      }
+      throw error;
     } finally {
       clearTimeout(timer);
+    }
+  }
+
+  async function askAI(action) {
+    let lastError;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        if (attempt === 2) setStatus('第一次请求未成功，正在自动重试…', 'loading');
+        return await askOnce(action);
+      } catch (error) {
+        lastError = error;
+        if (attempt < 2) await sleep(1200);
+      }
+    }
+    throw lastError || new Error('未知 AI 请求错误');
+  }
+
+  async function probeWorker() {
+    try {
+      const response = await fetch(ENDPOINT, { method: 'GET', cache: 'no-store' });
+      const data = await response.json().catch(() => null);
+      return response.ok && data?.ok;
+    } catch {
+      return false;
     }
   }
 
@@ -183,7 +211,6 @@
 
     const narrative = document.createElement('p');
     narrative.textContent = clean(ai.narrative || ai.immediate_step || 'AI 已理解行动，但本次没有返回可读取的具体情境。', 1800);
-
     box.append(title, intent, narrative);
 
     if (Array.isArray(ai.obstacles) && ai.obstacles.length) {
@@ -246,11 +273,14 @@
       bypass = false;
       aiMode.checked = true;
 
-      await new Promise((resolve) => setTimeout(resolve, 260));
+      await sleep(260);
       addAINarrative(ai, original);
       setStatus('Cloudflare GLM-4.7 Flash · 自由行动已启用', 'ok');
     } catch (error) {
       console.error('Cloudflare AI failed, using local rules:', error);
+      const workerOnline = await probeWorker();
+      const reason = clean(error?.message || error, 260);
+
       input.value = original;
       aiMode.checked = false;
       bypass = true;
@@ -258,8 +288,14 @@
       button.click();
       bypass = false;
       aiMode.checked = true;
-      setStatus('AI 暂时不可用 · 已自动使用本地规则', 'fallback');
-      toast('AI 暂时不可用，本次行动已由本地规则继续处理。');
+
+      if (workerOnline) {
+        setStatus(`Worker在线 · AI请求失败：${reason}`, 'fallback');
+        toast(`Cloudflare Worker 在线，但 AI 请求失败：${reason}`);
+      } else {
+        setStatus(`Worker连接失败 · ${reason}`, 'fallback');
+        toast(`无法连接 AI Worker：${reason}`);
+      }
     } finally {
       busy = false;
       button.disabled = false;
