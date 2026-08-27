@@ -2,10 +2,10 @@
   'use strict';
   const status = document.getElementById('toast');
   const fail = (msg) => { if (status) { status.textContent = msg; status.classList.add('show'); } console.error(msg); };
-  async function loadBundle(prefix, count) {
-    const texts = await Promise.all(Array.from({length: count}, (_, i) =>
-      fetch(`assets/${prefix}.${String(i).padStart(2,'0')}.b64`, {cache:'no-cache'}).then(r => {
-        if (!r.ok) throw new Error(`${prefix} part ${i} HTTP ${r.status}`);
+  async function loadFiles(files) {
+    const texts = await Promise.all(files.map(file =>
+      fetch(`assets/${file}`, {cache:'no-cache'}).then(r => {
+        if (!r.ok) throw new Error(`${file} HTTP ${r.status}`);
         return r.text();
       })
     ));
@@ -18,9 +18,12 @@
     return new Response(stream).text();
   }
   try {
-    const dataCode = await loadBundle('data', 2);
+    const dataCode = await loadFiles(['data.00.b64','data.01.b64']);
     (0, eval)(dataCode);
-    const gameCode = await loadBundle('game', 6);
+    const gameCode = await loadFiles([
+      'game.00.b64','game.01.b64','game.02.b64',
+      'game.03a.b64','game.03b.b64','game.04a.b64','game.04b.b64','game.05a.b64','game.05b.b64'
+    ]);
     (0, eval)(gameCode);
   } catch (err) {
     fail(`魔法纪元加载失败：${err.message || err}`);
