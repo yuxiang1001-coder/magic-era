@@ -42,18 +42,80 @@
     toast._t = setTimeout(() => el.classList.remove('show'), 3200);
   }
 
+  function parseMaybeJson(value) {
+    if (value == null) return value;
+    if (Array.isArray(value)) {
+      const text = value.map((part) => {
+        if (typeof part === 'string') return part;
+        return part?.text || part?.content || '';
+      }).join('');
+      return parseMaybeJson(text);
+    }
+    if (typeof value !== 'string') return value;
+
+    let text = value.trim();
+    text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+    try { return JSON.parse(text); } catch {}
+
+    const first = text.indexOf('{');
+    const last = text.lastIndexOf('}');
+    if (first >= 0 && last > first) {
+      try { return JSON.parse(text.slice(first, last + 1)); } catch {}
+    }
+
+    return text;
+  }
+
   function normalizeResult(payload) {
     let result = payload?.result ?? payload;
-    for (let i = 0; i < 3; i++) {
-      if (typeof result === 'string') {
-        try { result = JSON.parse(result); } catch { break; }
-      } else if (result && typeof result === 'object' && typeof result.response === 'string') {
-        try { result = JSON.parse(result.response); } catch { result = result.response; break; }
-      } else {
-        break;
+
+    // Workers AI 的不同模型可能返回 {response:{...}}，也可能返回
+    // OpenAI 兼容格式 {choices:[{message:{content:"..."}}]}。
+    for (let i = 0; i < 6; i++) {
+      if (result == null) break;
+
+      if (result && typeof result === 'object' && Array.isArray(result.choices) && result.choices.length) {
+        const message = result.choices[0]?.message || {};
+        result = message.parsed ?? message.content ?? result.choices[0]?.text ?? result;
+        continue;
       }
+
+      if (result && typeof result === 'object' && result.response !== undefined) {
+        result = result.response;
+        continue;
+      }
+
+      if (result && typeof result === 'object' && result.result?.response !== undefined) {
+        result = result.result.response;
+        continue;
+      }
+
+      if (result && typeof result === 'object' && result.output_text !== undefined) {
+        result = result.output_text;
+        continue;
+      }
+
+      const parsed = parseMaybeJson(result);
+      if (parsed !== result) {
+        result = parsed;
+        continue;
+      }
+      break;
     }
-    return result && typeof result === 'object' ? result : { narrative: clean(result, 1200) };
+
+    result = parseMaybeJson(result);
+
+    if (result && typeof result === 'object' && !Array.isArray(result)) return result;
+
+    const text = clean(result, 1800);
+    return {
+      action_type: 'other',
+      understood_action: '',
+      target: '',
+      immediate_step: '',
+      narrative: text || 'AI 没有返回可读取的情境描述。'
+    };
   }
 
   async function askAI(action) {
@@ -120,7 +182,7 @@
       : `你的行动：${original}`;
 
     const narrative = document.createElement('p');
-    narrative.textContent = clean(ai.narrative || ai.immediate_step || '系统理解了你的行动，但没有生成额外叙事。', 1800);
+    narrative.textContent = clean(ai.narrative || ai.immediate_step || 'AI 已理解行动，但本次没有返回可读取的具体情境。', 1800);
 
     box.append(title, intent, narrative);
 
@@ -218,7 +280,6 @@
     boot();
   }
 
-  // loader.js 会异步加载游戏引擎；再次确认按钮已绑定。
   setTimeout(boot, 700);
   setTimeout(boot, 1800);
 })();
